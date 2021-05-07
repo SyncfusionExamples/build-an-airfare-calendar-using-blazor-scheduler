@@ -1,0 +1,220 @@
+﻿@page "/"
+
+<SfSchedule TValue="FlightData" Readonly="true" SelectedDate="@(new DateTime(2021, 4, 4))">
+    <ScheduleViews>
+        <ScheduleView Option="View.Month">
+            <EventTemplate>
+                @{
+                    <div class="template-wrap">
+                        <div class="fare-detail">$@((context as FlightData).Fare)</div>
+                        <div class="airline-name" style="display:flex;padding-left:5px;">
+                            <div class="airline-logo + @getAirWaysImage((context as FlightData).AirlineId)"></div>
+                            <div class="airway-name">@(getAirWaysName((context as FlightData).AirlineId))</div>
+                        </div>
+                    </div>
+                }
+            </EventTemplate>
+            <CellHeaderTemplate>
+                @{
+                    @(((context as TemplateContext).Date.Day == 1) ? (context as TemplateContext).Date.ToString("MMM d") : (context as TemplateContext).Date.ToString("dd"));
+                    if ((context as TemplateContext).Date == LowestFareDate.Date && FlightDataSource.Count != 0)
+                    {
+                        <span class="e-icons best-price-icon" /><span class="best-price">Best Price</span>
+                    }
+                }
+            </CellHeaderTemplate>
+        </ScheduleView>
+    </ScheduleViews>
+    <ScheduleEvents TValue="FlightData" OnRenderCell="RenderCellHandler"></ScheduleEvents>
+    <ScheduleEventSettings DataSource="FlightDataSource"></ScheduleEventSettings>
+</SfSchedule>
+
+@code{
+    public DateTime LowestFareDate { get; set; }
+    public class FlightData
+    {
+        public int Id { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public int AirlineId { get; set; }
+        public double Fare { get; set; }
+    }
+
+    List<FlightData> FlightDataSource = new List<FlightData>();
+
+    protected override void OnInitialized()
+    {
+        FlightDataSource = GenerateFlightData();
+    }
+
+    public string[] CustomClass = { "custom-class" };
+    public void RenderCellHandler(RenderCellEventArgs args)
+    {
+        if (args.ElementType == ElementType.MonthCells)
+        {
+            if (args.Date == LowestFareDate.Date && FlightDataSource.Count != 0)
+            {
+                args.CssClasses = new List<string>(CustomClass);
+            }
+        }
+    }
+
+    public List<FlightData> GenerateFlightData()
+    {
+        List<FlightData> dataCollections = new List<FlightData>
+        {
+            new FlightData { Id = 100, StartTime = new DateTime(2021, 4, 1, 8, 30, 0), EndTime = new DateTime(2021, 4, 1, 10, 0, 0), AirlineId = 1 },
+            new FlightData { Id = 102, StartTime = new DateTime(2021, 4, 1, 11, 0, 0), EndTime = new DateTime(2021, 4, 1, 12, 0, 0), AirlineId = 2 },
+            new FlightData { Id = 103, StartTime = new DateTime(2021, 4, 1, 14, 0, 0), EndTime = new DateTime(2021, 4, 1, 15, 0, 0), AirlineId = 3 }
+        };
+        int resource, id = 1;
+        List<FlightData> collections = new List<FlightData>();
+        for (int date = 0, day = 0; date < DateTime.DaysInMonth(2021, 4); date++, day++)
+        {
+            resource = 1;
+            foreach (FlightData data in dataCollections)
+            {
+                collections.Add(new FlightData
+                {
+                    Id = id,
+                    StartTime = data.StartTime.AddDays(day),
+                    EndTime = data.EndTime.AddDays(day),
+                    AirlineId = resource,
+                    Fare = Convert.ToDouble(((new Random().NextDouble() * 500) + 100).ToString("n2"))
+                });
+                resource++; id++;
+            }
+        }
+        List<FlightData> filterCollection = FilterByFare(collections);
+        return filterCollection;
+    }
+
+    public List<FlightData> FilterByFare(List<FlightData> appointments)
+    {
+        List<FlightData> finalData = new List<FlightData>();
+        var renderDate = appointments.GroupBy(x => x.StartTime.Date).ToList();
+        foreach (var date in renderDate)
+        {
+            DateTime strTime = date.Key;
+            DateTime endTime = new DateTime(strTime.Year, strTime.Month, strTime.Day, 23, 59, 59, 59);
+            var predicate = from app in appointments
+                            where app.StartTime >= strTime && app.EndTime >= app.StartTime && app.StartTime < endTime || app.StartTime <= strTime && app.EndTime > strTime
+                            select app;
+            List<FlightData> perDayData = predicate.ToList();
+            if (perDayData.Count > 0)
+            {
+                perDayData = perDayData.OrderBy(x => x.Fare).ToList();
+                finalData.Add(perDayData.First());
+            }
+        }
+        LowestFareDate = finalData.OrderBy(x => x.Fare).First().StartTime;
+        return finalData;
+    }
+
+    private string getAirWaysName(int airlineId)
+    {
+        return (airlineId == 1) ? "Airways 1" : (airlineId == 2) ? "Airways 2" : "Airways 3";
+    }
+
+    private string getAirWaysImage(int airlineId)
+    {
+        return (airlineId == 1) ? "airways-1" : (airlineId == 2) ? "airways-2" : "airways-3";
+    }
+
+}
+
+<style>
+
+    .custom-class {
+        background-color: lightyellow !important;
+    }
+
+    .e-schedule .e-appointment .template-wrap {
+        color: black;
+        width: 100%;
+    }
+
+    .e-schedule .best-price:not(.e-work-cells) {
+        color: #e1ad01;
+        margin-left: 40px;
+        width: auto;
+        font-size: 11px;
+    }
+
+    .e-schedule .best-price-icon {
+        color: #e1ad01;
+        margin-left: 5px;
+        float: right;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+        .e-schedule .best-price-icon::before {
+            content: '\e682';
+        }
+
+    .e-schedule .fare-detail {
+        color: #00837B;
+        font-size: 14px;
+        font-weight: 500;
+        height: 22px;
+        padding-left: 6px;
+        text-decoration: underline;
+    }
+
+    .e-schedule .e-month-view .e-date-header{
+        margin: 4px 0 0 4px;
+        font-size: 12px;
+    }
+    .e-schedule .e-month-view .e-header-cells {
+        font-size: 12px;
+        padding-left: 4px;
+    }
+
+    .e-schedule .airway-name {
+        font-size: 11px;
+        overflow: hidden;
+        padding-left: 5px;
+        text-overflow: ellipsis;
+    }
+
+    .e-schedule .e-month-view .e-appointment {
+        height: 40px;
+        background: none;
+        border-width: 0;
+    }
+
+    .e-schedule .e-month-view .e-appointment .e-appointment-details {
+        height: inherit;
+    }
+
+    .e-schedule .e-month-view .e-more-indicator {
+        display: none
+    }
+
+    .e-schedule .e-month-view .e-appointment.e-appointment-border,
+    .e-schedule .e-month-view .e-appointment:focus {
+        border-width: 0;
+    }
+
+    .e-schedule .template-wrap .airline-logo {
+        background-size: cover;
+        background-repeat: no-repeat;
+        margin-top: -3px;
+        width: 25px;
+        height: 25px;
+    }
+
+        .e-schedule .template-wrap .airline-logo.airways-1 {
+            background-image: url('https://ej2.syncfusion.com/demos/src/schedule/images/airways-1.svg');
+        }
+
+        .e-schedule .template-wrap .airline-logo.airways-2 {
+            background-image: url('https://ej2.syncfusion.com/demos/src/schedule/images/airways-2.svg');
+        }
+
+        .e-schedule .template-wrap .airline-logo.airways-3 {
+            background-image: url('https://ej2.syncfusion.com/demos/src/schedule/images/airways-3.svg');
+        }
+
+</style>
