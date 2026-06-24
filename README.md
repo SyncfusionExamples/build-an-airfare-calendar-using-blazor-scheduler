@@ -2,7 +2,7 @@
 
 ## Repository Description
 
-This is a quick start Blazor project that demonstrates how to design and implement an interactive airfare calendar using the Syncfusion Blazor Scheduler component. The project showcases practical implementation techniques for displaying flight pricing information with scheduling capabilities, allowing users to view and manage airfare data in a calendar interface.
+This is a quick start Blazor project that demonstrates how to design and implement an interactive airfare calendar using the [Blazor Scheduler](https://www.syncfusion.com/blazor-components/blazor-scheduler) component. The project showcases practical implementation techniques for displaying flight pricing information with scheduling capabilities, allowing users to view and manage airfare data in a calendar interface.
 
 ## Project Overview
 
