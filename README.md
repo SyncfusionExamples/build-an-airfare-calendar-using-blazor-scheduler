@@ -1,12 +1,6 @@
 # Build an airfare calendar using Blazor Scheduler
 
-## Repository Description
-
-This is a quick start Blazor project that demonstrates how to design and implement an interactive airfare calendar using the [Blazor Scheduler](https://www.syncfusion.com/blazor-components/blazor-scheduler) component. The project showcases practical implementation techniques for displaying flight pricing information with scheduling capabilities, allowing users to view and manage airfare data in a calendar interface.
-
-## Project Overview
-
-This sample project provides a hands-on example of integrating the Syncfusion Blazor Scheduler component to create an airfare calendar application. It illustrates how to leverage Blazor and Syncfusion components to build responsive, feature-rich scheduling interfaces for travel and pricing data visualization.
+This quick-start Blazor project demonstrates how to design and implement an interactive airfare calendar using the [Blazor Scheduler](https://www.syncfusion.com/blazor-components/blazor-scheduler) component. It showcases displaying and managing flight pricing data within a calendar interface, providing a practical example of building responsive, feature-rich scheduling solutions for travel and pricing visualization using Syncfusion Blazor components.
 
 ## Features
 
@@ -20,14 +14,13 @@ This sample project provides a hands-on example of integrating the Syncfusion Bl
 
 * Visual Studio 2022
 * .NET 6.0 or later
-* Syncfusion Blazor packages
 
 ## How to run the project
 
-1. Checkout this project to a location on your disk.
-2. Open the solution file using Visual Studio 2022.
-3. Restore the NuGet packages by rebuilding the solution.
-4. Run the project.
+1. Checkout this project to your local machine
+2. Open the solution file using Visual Studio 2022
+3. Build the solution to restore the required NuGet packages
+4. Press `F5` to start the application
 
 ## Documentation
 
