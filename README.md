@@ -12,8 +12,8 @@ This quick-start Blazor project demonstrates how to design and implement an inte
 
 ## Prerequisites
 
-* Visual Studio 2022
-* .NET 6.0 or later
+* Visual Studio 2022 version 17.12 or later / Visual Studio Code
+* .NET 10.0 SDK or later
 
 ## How to run the project
 
